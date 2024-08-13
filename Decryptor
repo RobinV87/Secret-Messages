@@ -1,0 +1,37 @@
+# imports
+from cryptography.fernet import Fernet
+import os
+
+# Open the file you want to decrypt
+def load_encrypted_token():
+    with open('encrypted_message.txt', 'rb') as message_file:
+        encrypted_token = message_file.read()
+    return encrypted_token
+
+# Loading the key from the key file
+def load_key():
+    with open('encryption_key.key', 'rb') as key_file:
+        key = key_file.read()
+    return key
+
+# Using the key on the encrypted text
+def decryptor_token():
+    key_file_path = 'encryption_key.key'
+    if not os.path.exists(key_file_path):
+        print("Key file not found. Decryption is not possible.")
+        return
+
+    encrypted_message_path = 'encrypted_message.txt'
+    if not os.path.exists(encrypted_message_path):
+        print("Encrypted message file not found. Decryption is not possible.")
+        return
+
+    key = load_key()
+    f = Fernet(key)
+    
+    encrypted_token = load_encrypted_token()
+    decrypted_token = f.decrypt(encrypted_token)
+    print("Decrypted message:", decrypted_token.decode())
+
+# Decrypt the token
+decryptor_token()
