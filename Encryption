@@ -1,0 +1,59 @@
+from cryptography.fernet import Fernet
+import os
+from colorama import init, Fore, Style
+
+# init colorama
+init()
+
+
+def save_encrypted_token(token):
+    # where it's located, should be the same folder, if not, change the directory!
+    file_path = 'encrypted_message.txt'
+    
+    # Check if the file exists
+    if os.path.exists(file_path):
+        # Read the existing content
+        with open(file_path, 'rb') as message_file:
+            existing_token = message_file.read()
+        
+        # Compare the token with a possible existing token
+        if existing_token == token:
+            print(Fore.GREEN + "The token is already available." + Style.RESET_ALL)
+            return
+        else:
+            print(Fore.YELLOW + "The token is different. Overwriting the file." + Style.RESET_ALL)
+    
+    with open(file_path, 'wb') as message_file:
+        message_file.write(token)
+    print(Fore.GREEN + "Token has been written to the file.")
+    print(f"The token is saved in", os.getcwd() + Style.RESET_ALL)
+	
+# Generates the key for the encryption
+def key_generation():
+    key = Fernet.generate_key()
+    with open('encryption_key.key', 'wb') as key_file:
+        key_file.write(key)
+    return key
+
+# Generates the token
+def encryptor_token():
+    key_file_path = 'encryption_key.key'
+    if not os.path.exists(key_file_path):
+        print(Fore.YELLOW + "Key file not found. Generating a new key." + Style.RESET_ALL)
+        key = key_generation()
+        print(Fore.GREEN+ "Key is generated and stored in: ")
+        print(os.getcdw())
+    else:
+        with open(key_file_path, 'rb') as key_file:
+            key = key_file.read()
+
+    f = Fernet(key)
+    token = input("What would you like to encrypt? ").encode()
+    encrypted_token = f.encrypt(token)
+    print("Encrypted token:", encrypted_token)
+    
+    save_encrypted_token(encrypted_token)
+
+# Generate key and encrypt token
+key_generation()
+encryptor_token()
